@@ -42,7 +42,7 @@ declare module '$env/static/private' {
 	export const DriverData: string;
 	export const DXSDK_DIR: string;
 	export const EDITOR: string;
-	export const EFC_5492: string;
+	export const EFC_5896: string;
 	export const ERLANG_HOME: string;
 	export const FPS_BROWSER_APP_PROFILE_STRING: string;
 	export const FPS_BROWSER_USER_PROFILE_STRING: string;
@@ -164,7 +164,7 @@ declare module '$env/dynamic/private' {
 		DriverData: string;
 		DXSDK_DIR: string;
 		EDITOR: string;
-		EFC_5492: string;
+		EFC_5896: string;
 		ERLANG_HOME: string;
 		FPS_BROWSER_APP_PROFILE_STRING: string;
 		FPS_BROWSER_USER_PROFILE_STRING: string;
