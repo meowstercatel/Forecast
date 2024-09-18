@@ -1,6 +1,9 @@
 # Forecast
 A good-looking desktop app to check the current and future weather.
 
+## Goal
+The goal of this project is to provide the user a nice-looking weather app.
+
 ## User interaction
 The user can check the weather and other information like wind speed, UV index, etc. That's pretty much it.
 
