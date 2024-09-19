@@ -1,6 +1,9 @@
 # Forecast
 A good-looking desktop app to check the current and future weather.
 
+## How does it work
+The website fetches weather information from a 3rd party website and then displays it to the user.
+
 ## Goal
 The goal of this project is to provide the user a nice-looking weather app.
 
