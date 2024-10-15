@@ -1,5 +1,5 @@
 # Forecast
-A good-looking desktop app to check the current and future weather.
+A good-looking desktop app to check the current and future weather.  
 Big thanks to [NRD](https://github.com/nrdsstuff) for letting me use their figma designs.
 
 ## How does it work
