@@ -2,16 +2,25 @@
 	// @ts-nocheck
 
 	import Counter from './Navigation.svelte';
-	import welcome from '$lib/images/svelte-welcome.webp';
-	import welcome_fallback from '$lib/images/svelte-welcome.png';
 	import Tiles from './Tiles.svelte';
 	import Tile from "./Tile.svelte";
 	import Navigation from './Navigation.svelte';
-	import WeatherBar from '$lib/nudl/WeatherBar.svelte';
+	import WeatherBar from './nudl/WeatherBar.svelte';
 	import { onMount } from 'svelte';
 
 	let todaysWeather = [{ temp: '0', hour: '00:00' }];
 	let weekWeather = [{ temp: '0', day: '09-10' }];
+	let precipitationProbability = 0;
+	let uvIndex = 0;
+	let windSpeed = 0;
+	let windDirection = "NW";
+	let location = {
+		container: "",
+		id: "",
+		latitude: 0.0,
+		longitude: 0.0,
+		name: ""
+	};
 
 	const id = '756135';
 	onMount(async () => {
@@ -32,10 +41,17 @@
 		weekWeather = [];
 		for (let i = 0; i <= 7; i++) {
 			const weather = response.forecasts[i];
-			weekWeather.push({
-				temp: weather.detailed.reports[11].feelsLikeTemperatureC,
+			if(weather.detailed.reports < 8) {
+				weekWeather.push({
+				temp: weather.detailed.reports[weather.detailed.reports.length-1].feelsLikeTemperatureC,
 				day: weather.summary.report.localDate.slice(5)
 			});
+			} else {
+			weekWeather.push({
+				temp: weather.detailed.reports[Math.floor(weather.detailed.reports.length/2)].feelsLikeTemperatureC,
+				day: weather.summary.report.localDate.slice(5)
+			});
+		}
 		}
 		weekWeather = weekWeather;
 		console.log(todaysWeather);
@@ -63,7 +79,7 @@
 				<div
 					style="gap: 10px; display: flex; flex-grow: 1; flex-shrink: 1; align-items: center; text-wrap: nowrap; width: 100%;"
 				>
-					7-day forecast <hr style="width: 85%;" />
+					7-day forecast <hr style="width: 80%;" />
 				</div>
 				<div class="bars">
 					{#each weekWeather as weather}
@@ -148,9 +164,10 @@
 		width: 998px;
 		height: 698px;
 		border-radius: 19px;
-		background-color: #242424b2;
+		background-color: #242424db;
 		display: flex;
 		flex-direction: column;
+		overflow: hidden;
 	}
 	#bottom {
 		width: 99%;

@@ -7,7 +7,9 @@
 	export let multiplier = 9;
 
 	let weatherBar;
-	onMount(() => setTimeout(() => {weatherBar.style.height = parseInt(temperature)*multiplier+"px"}, 123));
+	// onMount(() => setTimeout(() => {
+	// 	weatherBar.style.height = parseInt(temperature)*multiplier+"px"
+	// }, 2000));
 	
 </script>
 
@@ -16,7 +18,7 @@
 		<div id="date">{date}</div>
 		<div id="state">{state}</div>
 	</div>
-	<div bind:this={weatherBar} class="weatherYellow">
+	<div bind:this={weatherBar} style="height: {parseInt(temperature)*multiplier}px" class="weatherYellow">
 		<div style="height: 3px; width: 100%; background-color: yellow; align-self: flex-start;"></div>
 		<div class="weatherBarTemperature" style="">
 			{temperature}
