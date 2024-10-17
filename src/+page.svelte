@@ -1,15 +1,15 @@
 <script>
 	// @ts-nocheck
 
-	import Counter from './Navigation.svelte';
-	import Tiles from './Tiles.svelte';
+	import Counter from "./Navigation.svelte";
+	import Tiles from "./Tiles.svelte";
 	import Tile from "./Tile.svelte";
-	import Navigation from './Navigation.svelte';
-	import WeatherBar from './nudl/WeatherBar.svelte';
-	import { onMount } from 'svelte';
+	import Navigation from "./Navigation.svelte";
+	import WeatherBar from "./nudl/WeatherBar.svelte";
+	import { onMount } from "svelte";
 
-	let todaysWeather = [{ temp: '0', hour: '00:00' }];
-	let weekWeather = [{ temp: '0', day: '09-10' }];
+	let todaysWeather = [{ temp: "0", hour: "00:00" }];
+	let weekWeather = [{ temp: "0", day: "09-10" }];
 	let precipitationProbability = 0;
 	let uvIndex = 0;
 	let windSpeed = 0;
@@ -19,45 +19,64 @@
 		id: "",
 		latitude: 0.0,
 		longitude: 0.0,
-		name: ""
+		name: "",
 	};
 
-	const id = '756135';
-	onMount(async () => {
-		const request = await fetch(
-			`https://weather-broker-cdn.api.bbci.co.uk/en/forecast/aggregated/${id}`
-		);
-		const response = await request.json();
-		console.log(response);
-		console.log('temp: ' + response.forecasts[0].detailed.reports[0].feelsLikeTemperatureC);
-		todaysWeather = [];
-		response.forecasts[0].detailed.reports.forEach((weather) => {
+	const id = "756135";
+	class Weather {
+		constructor() {
+			this.response = {};
+			fetchApi();
+		}
+		async fetchApi() {
+			const request = await fetch(
+				`https://weather-broker-cdn.api.bbci.co.uk/en/forecast/aggregated/${id}`,
+			);
+			const response = await request.json();
+			this.response = response;
+		}
+		getWeekWeather() {
+			let weekWeather = [];
+			for (let i = 0; i <= 7; i++) {
+				const weather = this.response.forecasts[i];
+				if (weather.detailed.reports < 8) {
+					weekWeather.push({
+						temp: weather.detailed.reports[
+							weather.detailed.reports.length - 1
+						].feelsLikeTemperatureC,
+						day: weather.summary.report.localDate.slice(5),
+					});
+				} else {
+					weekWeather.push({
+						temp: weather.detailed.reports[
+							Math.floor(weather.detailed.reports.length / 2)
+						].feelsLikeTemperatureC,
+						day: weather.summary.report.localDate.slice(5),
+					});
+				}
+			}
+			return weekWeather;
+		}
+		getTodaysWeather() {
+			let todaysWeather = [];
+			this.response.forecasts[0].detailed.reports.forEach((weather) => {
 			todaysWeather.push({
-				temp: weather.feelsLikeTemperatureC, 
-				hour: weather.timeslot 
+				temp: weather.feelsLikeTemperatureC,
+				hour: weather.timeslot,
 			});
+			return todaysWeather;
 		});
+		}
+	}
+
+	onMount(async () => {
+		const weather = new Weather();
+		weekWeather = weather.getWeekWeather();
+		todaysWeather = weather.getTodaysWeather();
+		
 		todaysWeather = todaysWeather;
-		weekWeather = [];
-		for (let i = 0; i <= 7; i++) {
-			const weather = response.forecasts[i];
-			if(weather.detailed.reports < 8) {
-				weekWeather.push({
-				temp: weather.detailed.reports[weather.detailed.reports.length-1].feelsLikeTemperatureC,
-				day: weather.summary.report.localDate.slice(5)
-			});
-			} else {
-			weekWeather.push({
-				temp: weather.detailed.reports[Math.floor(weather.detailed.reports.length/2)].feelsLikeTemperatureC,
-				day: weather.summary.report.localDate.slice(5)
-			});
-		}
-		}
 		weekWeather = weekWeather;
-		console.log(todaysWeather);
-		console.log(
-			'precipitation: ' + response.forecasts[0].summary.report.precipitationProbabilityInPercent
-		);
+
 	});
 </script>
 
@@ -71,7 +90,10 @@
 	<div id="forecast">
 		<div id="today">
 			{#each todaysWeather as weather}
-				<WeatherBar date={weather.hour} temperature={weather.temp + 'C'} />
+				<WeatherBar
+					date={weather.hour}
+					temperature={weather.temp + "C"}
+				/>
 			{/each}
 		</div>
 		<div id="bottom">
@@ -83,7 +105,11 @@
 				</div>
 				<div class="bars">
 					{#each weekWeather as weather}
-						<WeatherBar date={weather.day} temperature={weather.temp+"C"} multiplier={6} />
+						<WeatherBar
+							date={weather.day}
+							temperature={weather.temp + "C"}
+							multiplier={6}
+						/>
 					{/each}
 				</div>
 			</div>
@@ -112,8 +138,18 @@
 
 <style>
 	#uvBar {
-		background: linear-gradient(0deg, rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.25)),
-			linear-gradient(90deg, #00ff29 0%, #ffe70e 34%, #ff0000 70.5%, #9e00ff 100%);
+		background: linear-gradient(
+				0deg,
+				rgba(255, 255, 255, 0.25),
+				rgba(255, 255, 255, 0.25)
+			),
+			linear-gradient(
+				90deg,
+				#00ff29 0%,
+				#ffe70e 34%,
+				#ff0000 70.5%,
+				#9e00ff 100%
+			);
 		height: 5px;
 		width: 115px;
 		border-radius: 10px;
