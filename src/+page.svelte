@@ -24,16 +24,15 @@
 
 	const id = "756135";
 	class Weather {
-		constructor() {
-			this.response = {};
-			fetchApi();
-		}
 		async fetchApi() {
 			const request = await fetch(
 				`https://weather-broker-cdn.api.bbci.co.uk/en/forecast/aggregated/${id}`,
 			);
 			const response = await request.json();
 			this.response = response;
+		}
+		constructor() {
+			this.response = {};
 		}
 		getWeekWeather() {
 			let weekWeather = [];
@@ -59,24 +58,51 @@
 		}
 		getTodaysWeather() {
 			let todaysWeather = [];
+			console.log(this.response.forecasts);
 			this.response.forecasts[0].detailed.reports.forEach((weather) => {
-			todaysWeather.push({
-				temp: weather.feelsLikeTemperatureC,
-				hour: weather.timeslot,
+				todaysWeather.push({
+					temp: weather.feelsLikeTemperatureC,
+					hour: weather.timeslot,
+				});
 			});
 			return todaysWeather;
-		});
+		}
+		getCurrentUvIndex() {
+			return this.response.forecasts[0].summary.report.uvIndex+1;
+		}
+		getWindStats() {
+			const report = this.response.forecasts[0].summary.report;
+			const direction = report.windDirectionAbbreviation;
+			const speed = report.windSpeedKph
+			return {
+				direction: direction,
+				speed: speed
+			};
+		}
+		getSunStats() {
+			const report = this.response.forecasts[0].summary.report;
+			return {
+				sunrise: report.sunrise,
+				sunset: report.sunset
+			}
+		}
+		getTodaysPrecipitationProbability() {
+			return this.response.forecasts[0].summary.report.precipitationProbabilityInPercent;
 		}
 	}
 
 	onMount(async () => {
 		const weather = new Weather();
+		await weather.fetchApi();
 		weekWeather = weather.getWeekWeather();
 		todaysWeather = weather.getTodaysWeather();
-		
+
 		todaysWeather = todaysWeather;
 		weekWeather = weekWeather;
 
+		const uvIndex = weather.getCurrentUvIndex();
+		const uvBallElement = document.getElementById("uvBarBall");
+		uvBallElement.style.left = `${16 * uvIndex}px`
 	});
 </script>
 
